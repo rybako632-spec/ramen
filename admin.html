@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Ramen — Admin</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Yuji+Boku&display=swap" rel="stylesheet">
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    background: #d9d1bd;
+    color: #211712;
+    font-family: Arial, sans-serif;
+}
+
+.admin-container {
+    width: min(600px, 100%);
+    margin: auto;
+    min-height: 100vh;
+    background: #e8e0cc;
+    padding: 20px;
+}
+
+h1 {
+    margin: 0 0 20px;
+    color: #b52b20;
+    font-family: "Yuji Boku", serif;
+    font-size: 38px;
+}
+
+h2 {
+    color: #b52b20;
+    margin-top: 25px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* LOGOWANIE */
+
+.login-box {
+    padding-top: 20vh;
+}
+
+.input-group {
+    margin-bottom: 14px;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+input,
+textarea,
+select {
+    width: 100%;
+    border: 1px solid #b9ab92;
+    background: #f6efdf;
+    color: #211712;
+    border-radius: 10px;
+    padding: 12px;
+    font-size: 15px;
+    outline: none;
+}
+
+textarea {
+    min-height: 90px;
+    resize: vertical;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    border-color: #b52b20;
+}
+
+/* PRZYCISKI */
+
+button {
+    border: 0;
+    border-radius: 10px;
+    padding: 12px 16px;
+    cursor: pointer;
+    font-weight: bold;
+    touch-action: manipulation;
+}
+
+.main-btn {
+    width: 100%;
+    background: #b52b20;
+    color: white;
+    font-size: 15px;
+}
+
+.logout {
+    margin-top: 15px;
+    background: #30241d;
+}
+
+.status {
+    text-align: center;
+    margin: 12px 0;
+    font-size: 13px;
+}
+
+/* ZAKŁADKI */
+
+.tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.tabs button {
+    flex: 1;
+    background: #d1c5ad;
+    color: #b52b20;
+}
+
+.tabs button.active {
+    background: #b52b20;
+    color: white;
+}
+
+/* FORMULARZ */
+
+.form {
+    background: rgba(255,255,255,.22);
+    border-radius: 15px;
+    padding: 15px;
+}
+
+/* LISTA DAŃ */
+
+.dish-list {
+    margin-top: 20px;
+}
+
+.dish {
+    background: #f6efdf;
+    border: 1px solid #c7baa1;
+    border-radius: 13px;
+    padding: 12px;
+    margin-bottom: 12px;
+}
+
+.dish-top {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.dish-image {
+    width: 75px;
+    height: 75px;
+    border-radius: 10px;
+    object-fit: cover;
+    background: #d1c5ad;
+    flex-shrink: 0;
+}
+
+.dish-info {
+    min-width: 0;
+    flex: 1;
+}
+
+.dish-name {
+    color: #b52b20;
+    font-weight: bold;
+    font-size: 17px;
+}
+
+.dish-price {
+    margin-top: 4px;
+    font-weight: bold;
+}
+
+.dish-category {
+    margin-top: 4px;
+    font-size: 12px;
+    opacity: .7;
+}
+
+.actions {
+    display: flex;
+    gap: 7px;
+    margin-top: 10px;
+}
+
+.edit-btn {
+    flex: 1;
+    background: #30241d;
+    color: white;
+}
+
+.delete-btn {
+    flex: 1;
+    background: #b52b20;
+    color: white;
+}
+
+.cancel-btn {
+    width: 100%;
+    margin-top: 8px;
+    background: #30241d;
+    color: white;
+}
+
+.preview {
+    display: none;
+    width: 100%;
+    max-height: 220px;
+    object-fit: cover;
+    border-radius: 12px;
+    margin-top: 10px;
+}
+
+.back {
+    display: inline-block;
+    margin-bottom: 15px;
+    color: #b52b20;
+    text-decoration: none;
+    font-weight: bold;
+}
+</style>
+</head>
+
+<body>
+
+<div class="admin-container">
+
+    <a href="index.html" class="back">← POWRÓT DO MENU</a>
+
+    <!-- LOGOWANIE -->
+
+    <div id="loginScreen" class="login-box">
+
+        <h1>ADMINISTRACJA</h1>
+
+        <div class="input-group">
+            <label>E-mail</label>
+            <input
+                id="email"
+                type="email"
+                autocomplete="off"
+                placeholder="admin@email.com"
+            >
+        </div>
+
+        <div class="input-group">
+            <label>Hasło</label>
+            <input
+                id="password"
+                type="password"
+                autocomplete="off"
+                placeholder="Hasło"
+            >
+        </div>
+
+        <button class="main-btn" id="loginBtn">
+            ZALOGUJ SIĘ
+        </button>
+
+        <div class="status" id="loginStatus"></div>
+
+    </div>
+
+
+    <!-- PANEL ADMINISTRATORA -->
+
+    <div id="adminScreen" class="hidden">
+
+        <h1>ADMINISTRACJA</h1>
+
+        <div class="tabs">
+
+            <button id="foodTab" class="active">
+                JEDZENIE JAPOŃSKIE
+            </button>
+
+            <button id="barTab">
+                BAR JAPOŃSKI
+            </button>
+
+        </div>
+
+
+        <div class="form">
+
+            <h2 id="formTitle">
+                DODAJ JEDZENIE
+            </h2>
+
+            <input type="hidden" id="editingId">
+
+            <div class="input-group">
+                <label>Nazwa</label>
+
+                <input
+                    id="name"
+                    type="text"
+                    placeholder="Tonkotsu Ramen"
+                >
+            </div>
+
+
+            <div class="input-group">
+                <label>Cena</label>
+
+                <input
+                    id="price"
+                    type="text"
+                    placeholder="18 zł"
+                >
+            </div>
+
+
+            <div class="input-group">
+                <label>Kategoria</label>
+
+                <input
+                    id="category"
+                    type="text"
+                    placeholder="RAMEN"
+                >
+            </div>
+
+
+            <div class="input-group">
+                <label>Opis</label>
+
+                <textarea
+                    id="description"
+                    placeholder="Opis..."
+                ></textarea>
+            </div>
+
+
+            <div class="input-group">
+                <label>Składniki</label>
+
+                <textarea
+                    id="ingredients"
+                    placeholder="Makarony, bulion, wieprzowina..."
+                ></textarea>
+            </div>
+
+
+            <div class="input-group">
+                <label>Alergeny</label>
+
+                <input
+                    id="allergens"
+                    type="text"
+                    placeholder="Gluten, soja..."
+                >
+            </div>
+
+
+            <div class="input-group">
+                <label>Zdjęcie</label>
+
+                <input
+                    id="photo"
+                    type="file"
+                    accept="image/*"
+                >
+
+                <img
+                    id="preview"
+                    class="preview"
+                    alt=""
+                >
+            </div>
+
+
+            <button
+                class="main-btn"
+                id="saveBtn"
+            >
+                DODAJ DANIE
+            </button>
+
+
+            <button
+                class="cancel-btn hidden"
+                id="cancelBtn"
+            >
+                ANULUJ EDYCJĘ
+            </button>
+
+            <div
+                class="status"
+                id="saveStatus"
+            ></div>
+
+        </div>
+
+
+        <h2>TWOJE DANIA</h2>
+
+        <div
+            class="dish-list"
+            id="dishList"
+        ></div>
+
+
+        <button
+            class="main-btn logout"
+            id="logoutBtn"
+        >
+            WYLOGUJ SIĘ
+        </button>
+
+    </div>
+
+</div>
+
+
+<script type="module">
+
+/* =========================================================
+   FIREBASE
+========================================================= */
+
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+
+import {
+    getAuth,
+    signInWithEmailAndPassword,
+    signOut,
+    onAuthStateChanged
+}
+from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
+
+import {
+    getFirestore,
+    collection,
+    addDoc,
+    getDocs,
+    updateDoc,
+    deleteDoc,
+    doc,
+    serverTimestamp
+}
+from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+
+
+const firebaseConfig = {
+
+    apiKey: "AIzaSyDiciWd9S4Rcl9FcmwARtEyJdIzoTXv46Y",
+
+    authDomain:
+        "ramen-e5285.firebaseapp.com",
+
+    projectId:
+        "ramen-e5285",
+
+    storageBucket:
+        "ramen-e5285.firebasestorage.app",
+
+    messagingSenderId:
+        "302560854716",
+
+    appId:
+        "1:302560854716:web:b9bcaebfe09841629b06b9",
+
+    measurementId:
+        "G-1092VKLX38"
+
+};
+
+
+const app =
+    initializeApp(firebaseConfig);
+
+const auth =
+    getAuth(app);
+
+const db =
+    getFirestore(app);
+
+
+/* =========================================================
+   CLOUDINARY
+========================================================= */
+
+const CLOUD_NAME =
+    "wtaymmya";
+
+const UPLOAD_PRESET =
+    "ramen-";
+
+
+/* =========================================================
+   ZMIENNE
+========================================================= */
+
+let currentSection = "food";
+
+
+/* =========================================================
+   ELEMENTY
+========================================================= */
+
+const loginScreen =
+    document.getElementById("loginScreen");
+
+const adminScreen =
+    document.getElementById("adminScreen");
+
+const loginStatus =
+    document.getElementById("loginStatus");
+
+const saveStatus =
+    document.getElementById("saveStatus");
+
+const dishList =
+    document.getElementById("dishList");
+
+const foodTab =
+    document.getElementById("foodTab");
+
+const barTab =
+    document.getElementById("barTab");
+
+
+/* =========================================================
+   LOGOWANIE
+========================================================= */
+
+document
+    .getElementById("loginBtn")
+    .addEventListener("click", login);
+
+
+async function login() {
+
+    const email =
+        document
+        .getElementById("email")
+        .value
+        .trim();
+
+    const password =
+        document
+        .getElementById("password")
+        .value;
+
+
+    if (!email || !password) {
+
+        loginStatus.textContent =
+            "Wprowadź adres e-mail i hasło.";
+
+        return;
+    }
+
+
+    loginStatus.textContent =
+        "LOGOWANIE...";
+
+
+    try {
+
+        await signInWithEmailAndPassword(
+            auth,
+            email,
+            password
+        );
+
+        loginStatus.textContent = "";
+
+    } catch (error) {
+
+        console.error(error);
+
+        loginStatus.textContent =
+            "Nieprawidłowy e-mail lub hasło.";
+
+    }
+
+}
+
+
+/* =========================================================
+   STAN UWIERZYTELNIENIA
+========================================================= */
+
+onAuthStateChanged(auth, user => {
+
+    if (user) {
+
+        loginScreen.classList.add("hidden");
+
+        adminScreen.classList.remove("hidden");
+
+        loadDishes();
+
+    } else {
+
+        loginScreen.classList.remove("hidden");
+
+        adminScreen.classList.add("hidden");
+
+    }
+
+});
+
+
+/* =========================================================
+   SEKCJA
+========================================================= */
+
+foodTab.addEventListener("click", () => {
+
+    currentSection = "food";
+
+    foodTab.classList.add("active");
+
+    barTab.classList.remove("active");
+
+    document.getElementById("formTitle")
+        .textContent = "DODAJ JEDZENIE";
+
+    loadDishes();
+
+});
+
+
+barTab.addEventListener("click", () => {
+
+    currentSection = "bar";
+
+    barTab.classList.add("active");
+
+    foodTab.classList.remove("active");
+
+    document.getElementById("formTitle")
+        .textContent = "DODAJ BAR";
+
+    loadDishes();
+
+});
+
+
+/* =========================================================
+   PRZESYŁANIE DO CLOUDINARY
+========================================================= */
+
+async function uploadImage(file) {
+
+    const formData =
+        new FormData();
+
+    formData.append(
+        "file",
+        file
+    );
+
+    formData.append(
+        "upload_preset",
+        UPLOAD_PRESET
+    );
+
+
+    const response =
+        await fetch(
+            `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,
+            {
+                method: "POST",
+                body: formData
+            }
+        );
+
+
+    if (!response.ok) {
+
+        throw new Error(
+            "Przesyłanie do Cloudinary nie powiodło się"
+        );
+
+    }
+
+
+    const data =
+        await response.json();
+
+
+    return data.secure_url;
+
+}
+
+
+/* =========================================================
+   DODAWANIE / EDYCJA
+========================================================= */
+
+document
+    .getElementById("saveBtn")
+    .addEventListener("click", saveDish);
+
+
+async function saveDish() {
+
+    const name =
+        document.getElementById("name")
+        .value
+        .trim();
+
+    const price =
+        document.getElementById("price")
+        .value
+        .trim();
+
+    const category =
+        document.getElementById("category")
+        .value
+        .trim();
+
+    const description =
+        document.getElementById("description")
+        .value
+        .trim();
+
+    const ingredients =
+        document.getElementById("ingredients")
+        .value
+        .trim();
+
+    const allergens =
+        document.getElementById("allergens")
+        .value
+        .trim();
+
+    const photo =
+        document.getElementById("photo");
+
+    const editingId =
+        document.getElementById("editingId")
+        .value;
+
+
+    if (!name || !price) {
+
+        saveStatus.textContent =
+            "Nazwa i cena są wymagane.";
+
+        return;
+    }
+
+
+    const saveBtn =
+        document.getElementById("saveBtn");
+
+    saveBtn.disabled = true;
+
+    saveStatus.textContent =
+        "Zapisywanie...";
+
+
+    try {
+
+        let imageUrl = "";
+
+
+        /* ZDJĘCIE */
+
+        if (photo.files.length > 0) {
+
+            saveStatus.textContent =
+                "Przesyłanie zdjęcia...";
+
+            imageUrl =
+                await uploadImage(
+                    photo.files[0]
+                );
+
+        }
+
+
+        const data = {
+
+            name,
+            price,
+            category,
+            description,
+            ingredients,
+            allergens,
+            section: currentSection,
+
+            updatedAt:
+                serverTimestamp()
+
+        };
+
+
+        if (imageUrl) {
+
+            data.imageUrl =
+                imageUrl;
+
+        }
+
+
+        /* EDYCJA */
+
+        if (editingId) {
+
+            await updateDoc(
+                doc(
+                    db,
+                    "dishes",
+                    editingId
+                ),
+                data
+            );
+
+        }
+
+        /* DODAWANIE */
+
+        else {
+
+            data.createdAt =
+                serverTimestamp();
+
+            await addDoc(
+                collection(
+                    db,
+                    "dishes"
+                ),
+                data
+            );
+
+        }
+
+
+        clearForm();
+
+        await loadDishes();
+
+        saveStatus.textContent =
+            "Gotowe!";
+
+    } catch (error) {
+
+        console.error(error);
+
+        saveStatus.textContent =
+            "Błąd: " +
+            error.message;
+
+    } finally {
+
+        saveBtn.disabled = false;
+
+    }
+
+}
+
+
+/* =========================================================
+   WCZYTYWANIE
+========================================================= */
+
+async function loadDishes() {
+
+    dishList.innerHTML =
+        "Ładowanie...";
+
+
+    try {
+
+        const snapshot =
+            await getDocs(
+                collection(
+                    db,
+                    "dishes"
+                )
+            );
+
+
+        dishList.innerHTML = "";
+
+
+        let amount = 0;
+
+
+        snapshot.forEach(item => {
+
+            const data =
+                item.data();
+
+
+            if (
+                (data.section || "food")
+                !== currentSection
+            ) {
+                return;
+            }
+
+
+            amount++;
+
+
+            const dish =
+                document.createElement("div");
+
+            dish.className =
+                "dish";
+
+
+            const image =
+                data.imageUrl
+                    ? `<img
+                        class="dish-image"
+                        src="${escapeHtml(data.imageUrl)}"
+                        alt=""
+                       >`
+                    : `<div class="dish-image"></div>`;
+
+
+            dish.innerHTML = `
+
+                <div class="dish-top">
+
+                    ${image}
+
+                    <div class="dish-info">
+
+                        <div class="dish-name">
+                            ${escapeHtml(data.name || "")}
+                        </div>
+
+                        <div class="dish-price">
+                            ${escapeHtml(data.price || "")}
+                        </div>
+
+                        <div class="dish-category">
+                            ${escapeHtml(data.category || "")}
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="actions">
+
+                    <button class="edit-btn">
+                        EDYTUJ
+                    </button>
+
+                    <button class="delete-btn">
+                        USUŃ
+                    </button>
+
+                </div>
+            `;
+
+
+            dish
+                .querySelector(".edit-btn")
+                .addEventListener(
+                    "click",
+                    () => editDish(
+                        item.id,
+                        data
+                    )
+                );
+
+
+            dish
+                .querySelector(".delete-btn")
+                .addEventListener(
+                    "click",
+                    () => deleteDish(
+                        item.id
+                    )
+                );
+
+
+            dishList.appendChild(dish);
+
+        });
+
+
+        if (amount === 0) {
+
+            dishList.innerHTML =
+                `<div class="status">
+                    Brak dań w tej sekcji.
+                </div>`;
+
+        }
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        dishList.innerHTML =
+            `<div class="status">
+                Błąd ładowania.
+            </div>`;
+
+    }
+
+}
+
+
+/* =========================================================
+   EDYCJA
+========================================================= */
+
+function editDish(id, data) {
+
+    document.getElementById("editingId")
+        .value = id;
+
+    document.getElementById("name")
+        .value = data.name || "";
+
+    document.getElementById("price")
+        .value = data.price || "";
+
+    document.getElementById("category")
+        .value = data.category || "";
+
+    document.getElementById("description")
+        .value = data.description || "";
+
+    document.getElementById("ingredients")
+        .value = data.ingredients || "";
+
+    document.getElementById("allergens")
+        .value = data.allergens || "";
+
+    document.getElementById("photo")
+        .value = "";
+
+    document.getElementById("saveBtn")
+        .textContent = "ZAPISZ ZMIANY";
+
+    document.getElementById("cancelBtn")
+        .classList.remove("hidden");
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+
+}
+
+
+/* =========================================================
+   USUWANIE
+========================================================= */
+
+async function deleteDish(id) {
+
+    if (
+        !confirm(
+            "Czy na pewno chcesz usunąć to danie?"
+        )
+    ) {
+        return;
+    }
+
+
+    try {
+
+        await deleteDoc(
+            doc(
+                db,
+                "dishes",
+                id
+            )
+        );
+
+
+        await loadDishes();
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            "Błąd podczas usuwania."
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   CZYSZCZENIE FORMULARZA
+========================================================= */
+
+document
+    .getElementById("cancelBtn")
+    .addEventListener(
+        "click",
+        clearForm
+    );
+
+
+function clearForm() {
+
+    document.getElementById("editingId")
+        .value = "";
+
+    document.getElementById("name")
+        .value = "";
+
+    document.getElementById("price")
+        .value = "";
+
+    document.getElementById("category")
+        .value = "";
+
+    document.getElementById("description")
+        .value = "";
+
+    document.getElementById("ingredients")
+        .value = "";
+
+    document.getElementById("allergens")
+        .value = "";
+
+    document.getElementById("photo")
+        .value = "";
+
+    document.getElementById("preview")
+        .style.display = "none";
+
+    document.getElementById("saveBtn")
+        .textContent = "DODAJ DANIE";
+
+    document.getElementById("cancelBtn")
+        .classList.add("hidden");
+
+}
+
+
+/* =========================================================
+   PODGLĄD ZDJĘCIA
+========================================================= */
+
+document
+    .getElementById("photo")
+    .addEventListener("change", event => {
+
+        const file =
+            event.target.files[0];
+
+        if (!file) return;
+
+
+        const preview =
+            document.getElementById("preview");
+
+        preview.src =
+            URL.createObjectURL(file);
+
+        preview.style.display =
+            "block";
+
+    });
+
+
+/* =========================================================
+   WYLOGOWANIE
+========================================================= */
+
+document
+    .getElementById("logoutBtn")
+    .addEventListener(
+        "click",
+        async () => {
+
+            await signOut(auth);
+
+            /*
+             * Po wylogowaniu Firebase ponowne
+             * wyświetli ekran LOGOWANIA.
+             */
+
+        }
+    );
+
+
+/* =========================================================
+   ANULOWANIE ZNAKÓW HTML (ESCAPE HTML)
+========================================================= */
+
+function escapeHtml(value) {
+
+    return String(value)
+
+        .replaceAll(
+            "&",
+            "&amp;"
+        )
+
+        .replaceAll(
+            "<",
+            "&lt;"
+        )
+
+        .replaceAll(
+            ">",
+            "&gt;"
+        )
+
+        .replaceAll(
+            '"',
+            "&quot;"
+        )
+
+        .replaceAll(
+            "'",
+            "&#039;"
+        );
+
+}
+
+</script>
+
+</body>
+</html>
